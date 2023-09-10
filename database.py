@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models.author import Base as AuthorBase
 from models.category import Base as CategoryBase
-from models.books import Base as BookBase
+from models.book import Base as BookBase
 
 DATABASE_URL = 'sqlite:///library.db'
 engine = create_engine(DATABASE_URL)

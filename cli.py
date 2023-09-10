@@ -2,7 +2,7 @@ import click
 from database import init_db, SessionLocal
 from models.author import Author
 from models.category import Category
-from models.books import Book
+from models.book import Book
 
 @click.group()
 def cli():
@@ -28,17 +28,43 @@ def add_category(name):
     session.close()
     click.echo(f'Category {name} added.')
 
+# @click.command()
+# @click.option('--title', prompt='Book Title', help='Title of the book')
+# @click.option('--author_id', prompt='Author ID', type=int, help='Author ID')
+# @click.option('--category_id', prompt='Category ID', type=int, help='Category ID')
+# def add_book(title, author_id, category_id):
+#     session = SessionLocal()
+#     book = Book(title=title, author_id=author_id, category_id=category_id)
+#     session.add(book)
+#     session.commit()
+#     session.close()
+#     click.echo(f'Book {title} added.')
+
 @click.command()
 @click.option('--title', prompt='Book Title', help='Title of the book')
 @click.option('--author_id', prompt='Author ID', type=int, help='Author ID')
 @click.option('--category_id', prompt='Category ID', type=int, help='Category ID')
 def add_book(title, author_id, category_id):
     session = SessionLocal()
-    book = Book(title=title, author_id=author_id, category_id=category_id)
+
+    # Fetch the Author object using the provided author_id
+    author = session.query(Author).filter(Author.id == author_id).first()
+
+    if author is None:
+        session.close()
+        click.echo(f'Author with ID {author_id} not found.')
+        return
+
+    # Create a new Book object with the associated Author and Category
+    book = Book(title=title)
+    book.author = author  # Set the author relationship
+    book.categories = [session.query(Category).filter(Category.id == category_id).first()]
+
     session.add(book)
     session.commit()
     session.close()
     click.echo(f'Book {title} added.')
+
 
 @click.command()
 def list_books():

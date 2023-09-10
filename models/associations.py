@@ -1,11 +1,10 @@
 from sqlalchemy import ForeignKey, Column, Integer, Table
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
 from .base import Base
 from .author import Author
 from .category import Category
 
-Base = declarative_base()
+
 
 # Define association tables
 book_author_association = Table(
