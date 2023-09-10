@@ -1,5 +1,6 @@
 import pytest
 from click.testing import CliRunner
+from sqlalchemy import create_engine
 from main import cli
 from database import init_db, SessionLocal
 from models.author import Author
@@ -20,9 +21,7 @@ def database():
     session.commit()
     session.close()
 
-    yield  # This is where the test function runs
-
-    # Clean up the test database after the test function finishes
+    yield  
     engine.dispose()
 
 def test_add_author(database):
