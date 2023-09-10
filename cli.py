@@ -1,6 +1,8 @@
 import click
 from database import init_db, SessionLocal
-from models import Author, Category, Book
+from models.author import Author
+from models.category import Category
+from models.books import Book
 
 @click.group()
 def cli():
@@ -38,33 +40,22 @@ def add_book(title, author_id, category_id):
     session.close()
     click.echo(f'Book {title} added.')
 
-# @click.command()
-# def list_books():
-#     session = SessionLocal()
-#     books = session.query(Book).all()
-#     session.close()
-#     if books:
-#         for book in books:
-#             click.echo(f'{book.id}: {book.title} by {book.author.name} ({book.category.name})')
-#     else:
-#         click.echo('No books found.')
 @click.command()
 def list_books():
     session = SessionLocal()
     books = session.query(Book).all()
 
     for book in books:
-        # Load the author and category attributes before closing the session
-        author_name = book.author.name
-        category_name = book.category.name
+        author_names = ', '.join([author.name for author in book.authors])
+        category_names = ', '.join([category.name for category in book.categories])
 
-        click.echo(f'{book.id}: {book.title} by {author_name} ({category_name})')
+        click.echo(f'{book.id}: {book.title} by {author_names} ({category_names})')
 
     session.close()
 
 @click.command()
 @click.option('--book-id', prompt='Book ID', help='ID of the book to update')
-@click.option('--new-title', prompt='New Title', help='New title for the book') 
+@click.option('--new-title', prompt='New Title', help='New title for the book')
 def update_book(book_id, new_title):
     session = SessionLocal()
     book = session.query(Book).filter(Book.id == book_id).first()
@@ -90,9 +81,10 @@ def delete_book(book_id):
         click.echo(f'Book {book_id} deleted.')
     else:
         click.echo(f'Book with ID {book_id} not found.')
+
 cli.add_command(add_author)
 cli.add_command(add_category)
 cli.add_command(add_book)
+cli.add_command(list_books)
 cli.add_command(update_book)
 cli.add_command(delete_book)
-cli.add_command(list_books)
