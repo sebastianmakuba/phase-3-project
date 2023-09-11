@@ -1,5 +1,5 @@
 import click
-from database import init_db, SessionLocal
+from models.database import init_db, SessionLocal
 from models.author import Author
 from models.category import Category
 from models.book import Book
